@@ -1,0 +1,1 @@
+docker run --name branas_16 -e POSTGRES_PASSWORD=123456 -e POSTGRES_USER=myuser -e POSTGRES_DB=branas_16 -p 5432:5432 -d postgres
