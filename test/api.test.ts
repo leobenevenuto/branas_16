@@ -30,7 +30,7 @@ test("Deve criar uma conta para o driver", async function () {
 		email: `john.doe${Math.random()}@gmail.com`,
 		cpf: "87748248800",
 		carPlate: "AAA9999",
-		isPassenger: true,
+		isPassenger: false,
 		isDriver: true
 	};
 	const responseSignup = await axios.post("http://localhost:3000/signup", input);
@@ -38,6 +38,7 @@ test("Deve criar uma conta para o driver", async function () {
 	const outputSignup = responseSignup.data
 	expect(outputSignup.accountId).toBeDefined()
 	const responseGetAccount = await axios.get(`http://localhost:3000/accounts/${outputSignup.accountId}`)
+	console.log("retorno", responseGetAccount)
 	const outputGetAccount = responseGetAccount.data
 	expect(outputGetAccount.name).toBe(input.name)
 	expect(outputGetAccount.email).toBe(input.email)
