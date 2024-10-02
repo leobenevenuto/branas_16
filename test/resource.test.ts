@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { AccountDAODatabase } from '../src/resources/AccountDAO'
+import { AccountRepositoryDatabase } from '../src/resources/AccountRepository'
 
 test("Deve salvar um registro na tabela account e consultar por ID", async function(){
     const account = {
@@ -9,13 +9,13 @@ test("Deve salvar um registro na tabela account e consultar por ID", async funct
 		cpf: "87748248800",
 		isPassenger: true
 	}
-    const accountDAO = new AccountDAODatabase()
-    await accountDAO.saveAccount(account)
-    const accountDAOById = await accountDAO.getAccountById(account.accountId)
-    expect(accountDAOById.account_id).toBe(account.accountId)
-    expect(accountDAOById.name).toBe(account.name)
-    expect(accountDAOById.email).toBe(account.email)
-    expect(accountDAOById.cpf).toBe(account.cpf)
+    const accountRepository = new AccountRepositoryDatabase()
+    await accountRepository.saveAccount(account)
+    const accountRepositoryById = await accountRepository.getAccountById(account.accountId)
+    expect(accountRepositoryById.account_id).toBe(account.accountId)
+    expect(accountRepositoryById.name).toBe(account.name)
+    expect(accountRepositoryById.email).toBe(account.email)
+    expect(accountRepositoryById.cpf).toBe(account.cpf)
 })
 
 test("Deve salvar um registro na tabela account e consultar por e-mail", async function(){
@@ -26,11 +26,11 @@ test("Deve salvar um registro na tabela account e consultar por e-mail", async f
 		cpf: "87748248800",
 		isPassenger: true
 	}
-    const accountDAO = new AccountDAODatabase()
-    await accountDAO.saveAccount(account)
-    const accountDAOByEmail = await accountDAO.getAccountByEmail(account.email)
-    expect(accountDAOByEmail.account_id).toBe(account.accountId)
-    expect(accountDAOByEmail.name).toBe(account.name)
-    expect(accountDAOByEmail.email).toBe(account.email)
-    expect(accountDAOByEmail.cpf).toBe(account.cpf)
+    const accountRepository = new AccountRepositoryDatabase()
+    await accountRepository.saveAccount(account)
+    const accountRepositoryByEmail = await accountRepository.getAccountByEmail(account.email)
+    expect(accountRepositoryByEmail.account_id).toBe(account.accountId)
+    expect(accountRepositoryByEmail.name).toBe(account.name)
+    expect(accountRepositoryByEmail.email).toBe(account.email)
+    expect(accountRepositoryByEmail.cpf).toBe(account.cpf)
 })

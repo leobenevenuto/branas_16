@@ -1,6 +1,6 @@
 import { GetAccount } from "../src/application/GetAccount";
 import { Signup } from "../src/application/Signup";
-import { AccountDAODatabase, AccountDAOMemory } from "../src/resources/AccountDAO";
+import { AccountRepositoryDatabase, AccountRepositoryMemory } from "../src/resources/AccountRepository";
 import { MailerGatewayMemory } from "../src/resources/MailerGateway";
 import sinon from "sinon";
 
@@ -8,13 +8,13 @@ let signup: Signup
 let getAccount: GetAccount
 
 beforeEach(async () => {
-	const acountDAO = new AccountDAODatabase()
+	const acountDAO = new AccountRepositoryDatabase()
 	const mailerGateway = new MailerGatewayMemory()
 	signup = new Signup(acountDAO, mailerGateway)
 	getAccount = new GetAccount(acountDAO)
 })
 
-test.only("Deve criar uma conta para o passageiro", async function () {
+test("Deve criar uma conta para o passageiro", async function () {
 	const input = {
 		name: "John Doe",
 		email: `john.doe${Math.random()}@gmail.com`,
@@ -98,13 +98,13 @@ test("Deve criar uma conta para o passageiro com stub", async function () {
 		cpf: "87748248800",
 		isPassenger: true
 	};
-	const saveAccountStub = sinon.stub(AccountDAODatabase.prototype, "saveAccount").resolves()
-	const getAccountByEmailStub = sinon.stub(AccountDAODatabase.prototype, "getAccountByEmail").resolves(null)
-	const getAccountByIdStub = sinon.stub(AccountDAODatabase.prototype, "getAccountById").resolves(input)
-	const accountDAO = new AccountDAOMemory()
+	const saveAccountStub = sinon.stub(AccountRepositoryDatabase.prototype, "saveAccount").resolves()
+	const getAccountByEmailStub = sinon.stub(AccountRepositoryDatabase.prototype, "getAccountByEmail").resolves(null)
+	const getAccountByIdStub = sinon.stub(AccountRepositoryDatabase.prototype, "getAccountById").resolves(input)
+	const accountRepository = new AccountRepositoryMemory()
 	const mailerGateway = new MailerGatewayMemory()
-	const signup = new Signup(accountDAO, mailerGateway)
-	const getAccount = new GetAccount(accountDAO)
+	const signup = new Signup(accountRepository, mailerGateway)
+	const getAccount = new GetAccount(accountRepository)
 	const outputSignup = await signup.execute(input)
 	expect(outputSignup.accountId).toBeDefined()
 	const outputGetAccount = await getAccount.execute(outputSignup)
@@ -125,10 +125,10 @@ test("Deve criar uma conta para o passageiro com spy", async function () {
 		isPassenger: true
 	};
 	const sendSpy = sinon.spy(MailerGatewayMemory.prototype, "send")
-	const accountDAO = new AccountDAOMemory()
+	const accountRepository = new AccountRepositoryMemory()
 	const mailerGateway = new MailerGatewayMemory()
-	const signup = new Signup(accountDAO, mailerGateway)
-	const getAccount = new GetAccount(accountDAO)
+	const signup = new Signup(accountRepository, mailerGateway)
+	const getAccount = new GetAccount(accountRepository)
 	const outputSignup = await signup.execute(input)
 	expect(outputSignup.accountId).toBeDefined()
 	const outputGetAccount = await getAccount.execute(outputSignup)
@@ -137,10 +137,11 @@ test("Deve criar uma conta para o passageiro com spy", async function () {
 	expect(outputGetAccount.cpf).toBe(input.cpf)
 	expect(sendSpy.calledOnce).toBe(true)
 	expect(sendSpy.calledWith(input.email, "Welcome!", "")).toBe(true)
+	sendSpy.restore()
 });
 
 
-test.only("Deve criar uma conta para o passageiro com mock", async function () {
+test("Deve criar uma conta para o passageiro com mock", async function () {
 	const input = {
 		name: "John Doe",
 		email: `john.doe${Math.random()}@gmail.com`,
@@ -148,11 +149,13 @@ test.only("Deve criar uma conta para o passageiro com mock", async function () {
 		isPassenger: true
 	};
 	const sendMock = sinon.mock(MailerGatewayMemory.prototype)
-	sendMock.expects("send").withArgs(input.email, "Welcome!", "").once().callsFake(() => {console.log("abc")})
-	const accountDAO = new AccountDAOMemory()
+	sendMock.expects("send").withArgs(input.email, "Welcome!", "").once().callsFake(async function () {
+		console.log("abc");
+	})
+	const accountRepository = new AccountRepositoryMemory()
 	const mailerGateway = new MailerGatewayMemory()
-	const signup = new Signup(accountDAO, mailerGateway)
-	const getAccount = new GetAccount(accountDAO)
+	const signup = new Signup(accountRepository, mailerGateway)
+	const getAccount = new GetAccount(accountRepository)
 	const outputSignup = await signup.execute(input)
 	expect(outputSignup.accountId).toBeDefined()
 	const outputGetAccount = await getAccount.execute(outputSignup)
@@ -160,5 +163,6 @@ test.only("Deve criar uma conta para o passageiro com mock", async function () {
 	expect(outputGetAccount.email).toBe(input.email)
 	expect(outputGetAccount.cpf).toBe(input.cpf)
 	sendMock.verify()
+	sendMock.restore()
 });
 
