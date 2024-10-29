@@ -1,3 +1,4 @@
+import Account from "../src/application/Account";
 import { GetAccount } from "../src/application/GetAccount";
 import { Signup } from "../src/application/Signup";
 import { AccountRepositoryDatabase, AccountRepositoryMemory } from "../src/resources/AccountRepository";
@@ -99,8 +100,8 @@ test("Deve criar uma conta para o passageiro com stub", async function () {
 		isPassenger: true
 	};
 	const saveAccountStub = sinon.stub(AccountRepositoryDatabase.prototype, "saveAccount").resolves()
-	const getAccountByEmailStub = sinon.stub(AccountRepositoryDatabase.prototype, "getAccountByEmail").resolves(null)
-	const getAccountByIdStub = sinon.stub(AccountRepositoryDatabase.prototype, "getAccountById").resolves(input)
+	const getAccountByEmailStub = sinon.stub(AccountRepositoryDatabase.prototype, "getAccountByEmail").resolves(undefined)
+	const getAccountByIdStub = sinon.stub(AccountRepositoryDatabase.prototype, "getAccountById").resolves(Account.restore("", input.email, input.cpf, "", true, false))
 	const accountRepository = new AccountRepositoryMemory()
 	const mailerGateway = new MailerGatewayMemory()
 	const signup = new Signup(accountRepository, mailerGateway)
